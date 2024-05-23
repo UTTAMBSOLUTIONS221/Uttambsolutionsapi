@@ -1,0 +1,6 @@
+@Uttambsolutionsapi_HostAddress = http://localhost:5019
+
+GET {{Uttambsolutionsapi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
