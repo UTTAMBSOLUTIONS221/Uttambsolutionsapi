@@ -36,6 +36,7 @@ namespace Uttambsolutionsapi.Controllers
                     synth.SelectVoiceByHints(ParseVoiceGender(VoiceGender), VoiceAge.Adult);
                     synth.SetOutputToWaveFile(speechFileName);
                     synth.Rate = Rate;
+                    synth.Volume = 100;
                     synth.Speak(ParsedText);
                 }
 
