@@ -11,18 +11,25 @@ namespace Uttambsolutionsapi.Controllers
     [ApiController]
     public class MarketingController : ControllerBase
     {
+        private readonly IWebHostEnvironment _hostEnvironment;
 
+        public MarketingController(IWebHostEnvironment hostEnvironment)
+        {
+            _hostEnvironment = hostEnvironment;
+        }
         [HttpGet("videomarketer")]
         public async Task<IActionResult> VideoMarketer(string ParsedText, int Rate, string VoiceGender)
         {
             try
             {
-                //var speechFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Content", "speech.wav");
+                var contentFolder = Path.Combine(_hostEnvironment.ContentRootPath, "Content");
+                var speechFileName = Path.Combine(contentFolder, "speech.wav");
 
-                string speechFileName = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "videos", "speech.wav");
-                if (!Directory.Exists(speechFileName))
+                // Ensure the directory exists
+                var directory = Path.GetDirectoryName(speechFileName);
+                if (!Directory.Exists(directory))
                 {
-                    Directory.CreateDirectory(speechFileName);
+                    Directory.CreateDirectory(directory);
                 }
 
                 using (var synth = new SpeechSynthesizer())
@@ -33,14 +40,23 @@ namespace Uttambsolutionsapi.Controllers
                     synth.Speak(ParsedText);
                 }
 
-                var fileBytes = await System.IO.File.ReadAllBytesAsync(speechFileName);
-                return File(fileBytes, "audio/wav", "speech.wav");
+                // Check if the file exists before attempting to read
+                if (System.IO.File.Exists(speechFileName))
+                {
+                    var fileBytes = await System.IO.File.ReadAllBytesAsync(speechFileName);
+                    return File(fileBytes, "audio/wav", "speech.wav");
+                }
+                else
+                {
+                    return NotFound(); // File not found
+                }
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
 
         private VoiceGender ParseVoiceGender(string gender)
         {
