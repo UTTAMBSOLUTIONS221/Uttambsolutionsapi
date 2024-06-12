@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Reflection;
 using System.Speech.Synthesis;
 
 namespace Uttambsolutionsapi.Controllers
@@ -22,11 +23,9 @@ namespace Uttambsolutionsapi.Controllers
         {
             try
             {
-                var contentFolder = Path.Combine(_hostEnvironment.ContentRootPath, "Content");
-                var speechFileName = Path.Combine(contentFolder, "speech.wav");
-
+                var speechFileName = "speech.wav";
+                string directory = Path.Combine("wwwroot", "Content", speechFileName);
                 // Ensure the directory exists
-                var directory = Path.GetDirectoryName(speechFileName);
                 if (!Directory.Exists(directory))
                 {
                     Directory.CreateDirectory(directory);
