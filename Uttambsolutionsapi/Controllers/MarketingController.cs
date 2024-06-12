@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using OpenCvSharp;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
+using System.Net.Http;
 using System.Speech.Synthesis;
 using System.Threading.Tasks;
-using OpenCvSharp;
 
 namespace Uttambsolutionsapi.Controllers
 {
@@ -13,8 +13,43 @@ namespace Uttambsolutionsapi.Controllers
     [ApiController]
     public class MarketingController : ControllerBase
     {
-        [HttpGet("videomarketer")]
-        public async Task<IActionResult> VideoMarketer(string ParsedText, int Rate, string VoiceGender)
+        [HttpGet("generatevideo")]
+        public async Task<IActionResult> GenerateVideo(string ParsedText, int Rate, string VoiceGender)
+        {
+            try
+            {
+                string outputDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "videos");
+                if (!Directory.Exists(outputDirectory))
+                {
+                    Directory.CreateDirectory(outputDirectory);
+                }
+
+                string videoFileName = $"video_{DateTime.Now.Ticks}.mp4";
+                string videoFilePath = Path.Combine(outputDirectory, videoFileName);
+
+                // Generate images
+                GenerateImages(outputDirectory);
+
+                // Generate speech and get the path
+                string speechFilePath = await GenerateSpeech(ParsedText, Rate, VoiceGender);
+
+                // Create video from images and include audio
+                if (!CreateVideoFromImages(outputDirectory, videoFilePath, speechFilePath))
+                {
+                    return BadRequest("Failed to create video.");
+                }
+
+                // Return the video file
+                var fileStream = new FileStream(videoFilePath, FileMode.Open);
+                return File(fileStream, "video/mp4", videoFileName);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        private async Task<string> GenerateSpeech(string ParsedText, int Rate, string VoiceGender)
         {
             try
             {
@@ -40,44 +75,21 @@ namespace Uttambsolutionsapi.Controllers
                 // Check if the file exists before attempting to read
                 if (!System.IO.File.Exists(speechFilePath))
                 {
-                    return NotFound(); // File not found
+                    throw new FileNotFoundException("Speech file not found after generation.");
                 }
 
-                var fileBytes = await System.IO.File.ReadAllBytesAsync(speechFilePath);
-                return File(fileBytes, "audio/wav", "speech.wav");
+                return speechFilePath;
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                Console.WriteLine($"Error generating speech: {ex.Message}");
+                throw;
             }
         }
 
         private VoiceGender ParseVoiceGender(string gender)
         {
             return string.Equals(gender, "Male", StringComparison.OrdinalIgnoreCase) ? VoiceGender.Male : VoiceGender.Female;
-        }
-
-        [HttpGet("generate")]
-        public IActionResult GenerateVideo()
-        {
-            string outputDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "videos");
-            if (!Directory.Exists(outputDirectory))
-            {
-                Directory.CreateDirectory(outputDirectory);
-            }
-
-            string videoFileName = $"video_{DateTime.Now.Ticks}.mp4";
-            string videoFilePath = Path.Combine(outputDirectory, videoFileName);
-
-            GenerateImages(outputDirectory);
-
-            if (!CreateVideoFromImages(outputDirectory, videoFilePath))
-            {
-                return BadRequest("Failed to create video.");
-            }
-
-            var fileStream = new FileStream(videoFilePath, FileMode.Open);
-            return File(fileStream, "video/mp4", videoFileName);
         }
 
         private void GenerateImages(string outputDirectory)
@@ -110,15 +122,15 @@ namespace Uttambsolutionsapi.Controllers
             return image;
         }
 
-        private bool CreateVideoFromImages(string imageDirectory, string videoFilePath)
+        private bool CreateVideoFromImages(string imageDirectory, string videoFilePath, string speechFilePath)
         {
             try
             {
                 // Path to ffmpeg executable
                 string ffmpegPath = @"C:\path\to\ffmpeg.exe"; // Update with the actual path to ffmpeg
 
-                // Command to create video from images
-                string arguments = $"-framerate 24 -i \"{Path.Combine(imageDirectory, "frame_%d.png")}\" -c:v libx264 -pix_fmt yuv420p \"{videoFilePath}\"";
+                // Command to create video from images and audio
+                string arguments = $"-framerate 24 -i \"{Path.Combine(imageDirectory, "frame_%d.png")}\" -i \"{speechFilePath}\" -c:v libx264 -c:a aac -strict experimental -pix_fmt yuv420p \"{videoFilePath}\"";
 
                 // Start the ffmpeg process
                 ProcessStartInfo psi = new ProcessStartInfo(ffmpegPath, arguments)
