@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace Uttambsolutionsapi.Controllers
 {
@@ -67,11 +67,39 @@ namespace Uttambsolutionsapi.Controllers
 
         private bool CreateVideoFromImages(string imageDirectory, string videoFilePath)
         {
-            // Implement video creation logic using the images in the directory
-            // This could involve using a third-party library like FFmpeg or System.Drawing.Common to encode images into a video format
-            // Due to the complexity of video creation, this part may require additional configuration and setup
-            // For simplicity, I'm omitting this part in this example.
-            return true;
+            try
+            {
+                // Path to ffmpeg executable
+                string ffmpegPath = @"C:\path\to\ffmpeg.exe"; // Update with the actual path to ffmpeg
+
+                // Command to create video from images
+                string arguments = $"-framerate 24 -i \"{Path.Combine(imageDirectory, "frame_%d.png")}\" -c:v libx264 -pix_fmt yuv420p \"{videoFilePath}\"";
+
+                // Start the ffmpeg process
+                Process ffmpegProcess = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = ffmpegPath,
+                        Arguments = arguments,
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true
+                    }
+                };
+
+                // Start the process
+                ffmpegProcess.Start();
+                ffmpegProcess.WaitForExit();
+
+                // Check if the video file was created successfully
+                return  System.IO.File.Exists(videoFilePath);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating video: {ex.Message}");
+                return false;
+            }
         }
     }
 }
