@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Speech.Synthesis;
 
 namespace Uttambsolutionsapi.Controllers
 {
@@ -10,6 +11,49 @@ namespace Uttambsolutionsapi.Controllers
     [ApiController]
     public class MarketingController : ControllerBase
     {
+
+        [HttpGet("videomarketer")]
+        public async Task<IActionResult> VideoMarketer(string ParsedText, int Rate, string VoiceGender)
+        {
+            try
+            {
+                //var speechFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Content", "speech.wav");
+
+                string speechFileName = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "videos", "speech.wav");
+                if (!Directory.Exists(speechFileName))
+                {
+                    Directory.CreateDirectory(speechFileName);
+                }
+
+                using (var synth = new SpeechSynthesizer())
+                {
+                    synth.SelectVoiceByHints(ParseVoiceGender(VoiceGender), VoiceAge.Adult);
+                    synth.SetOutputToWaveFile(speechFileName);
+                    synth.Rate = Rate;
+                    synth.Speak(ParsedText);
+                }
+
+                var fileBytes = await System.IO.File.ReadAllBytesAsync(speechFileName);
+                return File(fileBytes, "audio/wav", "speech.wav");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        private VoiceGender ParseVoiceGender(string gender)
+        {
+            if (string.Equals(gender, "Male", StringComparison.OrdinalIgnoreCase))
+            {
+                return VoiceGender.Male;
+            }
+            else
+            {
+                return VoiceGender.Female;
+            }
+        }
+
         [HttpGet("generate")]
         public IActionResult GenerateVideo()
         {
@@ -76,24 +120,21 @@ namespace Uttambsolutionsapi.Controllers
                 string arguments = $"-framerate 24 -i \"{Path.Combine(imageDirectory, "frame_%d.png")}\" -c:v libx264 -pix_fmt yuv420p \"{videoFilePath}\"";
 
                 // Start the ffmpeg process
-                Process ffmpegProcess = new Process
+                ProcessStartInfo psi = new ProcessStartInfo(ffmpegPath, arguments)
                 {
-                    StartInfo = new ProcessStartInfo
-                    {
-                        FileName = ffmpegPath,
-                        Arguments = arguments,
-                        UseShellExecute = false,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true
-                    }
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardError = true
                 };
 
-                // Start the process
-                ffmpegProcess.Start();
-                ffmpegProcess.WaitForExit();
+                using (Process ffmpegProcess = new Process { StartInfo = psi })
+                {
+                    ffmpegProcess.Start();
+                    ffmpegProcess.WaitForExit();
 
-                // Check if the video file was created successfully
-                return  System.IO.File.Exists(videoFilePath);
+                    // Check if the video file was created successfully
+                    return System.IO.File.Exists(videoFilePath);
+                }
             }
             catch (Exception ex)
             {
@@ -101,5 +142,6 @@ namespace Uttambsolutionsapi.Controllers
                 return false;
             }
         }
+
     }
 }
