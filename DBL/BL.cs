@@ -22,13 +22,13 @@ namespace DBL
         }
 
         #region Send Subscription Email
-        public Task<Genericmodel> Sendnewcustomersubscriptionemail(Newcustomersubscription obj)
+        public Task<Genericmodel> Sendnewcustomersubscriptionemail(Newcustomersubscription Obj)
         {
             Genericmodel model = new Genericmodel();
 
             return Task.Run(() =>
             {
-                var commtempdata = db.SettingsRepository.Getsystemcommunicationtemplatedatabyname(true, "Forgotpasswords");
+                var commtempdata = db.SettingsRepository.Getsystemcommunicationtemplatedatabyname(true, "Bookingademotemplate");
                 if (commtempdata != null)
                 {
                     StringBuilder StrBodyEmail = new StringBuilder(commtempdata.Templatebody);
