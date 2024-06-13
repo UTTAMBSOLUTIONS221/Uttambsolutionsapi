@@ -1,24 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mail;
+﻿using DBL.Entities;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net.Http;
+using System.Net.Mail;
 
 namespace DBL.Helpers
 {
     public class EmailSenderHelper
     {
-        public bool UttambsolutionssendemailAsync(string to, string subject, string body, bool IsBodyHtml, string EmailServer, string EmailServerEmail, string EmailServerPassword)
+        public bool UttambsolutionssendemailAsync(string to, string subject, string body, bool IsBodyHtml,string EmailServer, string EmailServerEmail,string EmailServerPassword)
         {
-            string appServer = "mail.uttambsolutions.com";
-            string appEmail = "communications@uttambsolutions.com";
-            string appPassword = "K@ribun1";
+            //string appServer = "mail.uttambsolutions.com";
+            //string appEmail = "communications@uttambsolutions.com";
+            //string appPassword = "K@ribun1";
 
-            //string appServer = "smtp.gmail.com";
-            //string appEmail = "uttambsolutions3@gmail.com";
-            //string appPassword = "fhuq etym dxel pmzw";
+            string appServer = "smtp.gmail.com";
+            string appEmail = "uttambsolutions3@gmail.com";
+            string appPassword = "fhuq etym dxel pmzw";
 
 
 
@@ -37,7 +34,7 @@ namespace DBL.Helpers
             //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             using (MailMessage mail = new MailMessage())
             {
-                mail.From = new MailAddress(appEmail, "UTTAMB SOLUTIONS");
+                mail.From = new MailAddress(appEmail,"EVEREST");
                 mail.IsBodyHtml = IsBodyHtml;
                 mail.Subject = subject;
                 mail.Body = body;
