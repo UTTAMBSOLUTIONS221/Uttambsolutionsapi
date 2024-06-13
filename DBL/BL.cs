@@ -36,8 +36,6 @@ namespace DBL
                     StrBodyEmail.Replace("@CompanyName", commtempdata.Module);
                     StrBodyEmail.Replace("@CompanyEmail", commtempdata.Moduleemail);
                     StrBodyEmail.Replace("@Fullname", Obj.Fullname);
-                    StrBodyEmail.Replace("@Username", Obj.Username);
-                    StrBodyEmail.Replace("@Password", sec.Decrypt(Obj.Password, Obj.Passharsh));
                     StrBodyEmail.Replace("@CurrentYear", DateTime.Now.Year.ToString());
                     string message = StrBodyEmail.ToString();
                     bool data = emlsnd.UttambsolutionssendemailAsync(Obj.Emailaddress, commtempdata.Templatesubject, message, true, "", "", "");
