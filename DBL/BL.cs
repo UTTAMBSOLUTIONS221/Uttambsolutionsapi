@@ -68,8 +68,6 @@ namespace DBL
                             model.RespStatus = 1;
                             model.RespMessage = "Template not found!";
                         }
-                        model.RespStatus = 0;
-                        model.RespMessage = "Email Sent";
                     }
                     else
                     {
