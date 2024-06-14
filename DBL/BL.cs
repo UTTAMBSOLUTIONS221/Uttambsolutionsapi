@@ -44,14 +44,14 @@ namespace DBL
                         var commtemprespdata = db.SettingsRepository.Getsystemcommunicationtemplatedatabyname(true, "Bookingademoresptemplate");
                         if (commtemprespdata != null)
                         {
-                            StringBuilder StrBodyEmailresp = new StringBuilder(commtempdata.Templatebody);
+                            StringBuilder StrBodyEmailresp = new StringBuilder(commtemprespdata.Templatebody);
                             StrBodyEmailresp.Replace("@Fullname", Obj.Fullname);
                             StrBodyEmailresp.Replace("@PhoneNumber", Obj.PhoneNumber);
                             StrBodyEmailresp.Replace("@Emailaddress", Obj.Emailaddress);
                             StrBodyEmailresp.Replace("@Module", Obj.Module);
                             StrBodyEmailresp.Replace("@CurrentYear", DateTime.Now.Year.ToString());
                             string messageresp = StrBodyEmailresp.ToString();
-                            bool data1 = emlsnd.UttambsolutionssendemailAsync(Obj.Emailaddress, commtempdata.Templatesubject, messageresp, true, "", "", "");
+                            bool data1 = emlsnd.UttambsolutionssendemailAsync(Obj.Emailaddress, commtemprespdata.Templatesubject, messageresp, true, "", "", "");
                             if (data1)
                             {
                                 model.RespStatus = 0;
