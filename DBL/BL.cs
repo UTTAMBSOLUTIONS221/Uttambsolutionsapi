@@ -41,7 +41,7 @@ namespace DBL
                     bool data = emlsnd.UttambsolutionssendemailAsync("fkingori@uttambsolutions.com", commtempdata.Templatesubject, message, true, "", "", "");
                     if (data)
                     {
-                        var commtemprespdata = db.SettingsRepository.Getsystemcommunicationtemplatedatabyname(true, "Bookingademotemplate");
+                        var commtemprespdata = db.SettingsRepository.Getsystemcommunicationtemplatedatabyname(true, "Bookingademoresptemplate");
                         if (commtemprespdata != null)
                         {
                             StringBuilder StrBodyEmailresp = new StringBuilder(commtempdata.Templatebody);
