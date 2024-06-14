@@ -32,13 +32,77 @@ namespace DBL
                 if (commtempdata != null)
                 {
                     StringBuilder StrBodyEmail = new StringBuilder(commtempdata.Templatebody);
-                    StrBodyEmail.Replace("@CompanyLogo", commtempdata.Modulelogo);
-                    StrBodyEmail.Replace("@CompanyName", commtempdata.Module);
-                    StrBodyEmail.Replace("@CompanyEmail", commtempdata.Moduleemail);
                     StrBodyEmail.Replace("@Fullname", Obj.Fullname);
+                    StrBodyEmail.Replace("@PhoneNumber", Obj.PhoneNumber);
+                    StrBodyEmail.Replace("@Emailaddress", Obj.Emailaddress);
+                    StrBodyEmail.Replace("@Module", Obj.Module);
                     StrBodyEmail.Replace("@CurrentYear", DateTime.Now.Year.ToString());
                     string message = StrBodyEmail.ToString();
-                    bool data = emlsnd.UttambsolutionssendemailAsync(Obj.Emailaddress, commtempdata.Templatesubject, message, true, "", "", "");
+                    bool data = emlsnd.UttambsolutionssendemailAsync("fkingori@uttambsolutions.com", commtempdata.Templatesubject, Obj.Message, true, "", "", "");
+                    if (data)
+                    {
+                        var commtemprespdata = db.SettingsRepository.Getsystemcommunicationtemplatedatabyname(true, "Bookingademotemplate");
+                        if (commtemprespdata != null)
+                        {
+                            StringBuilder StrBodyEmailresp = new StringBuilder(commtempdata.Templatebody);
+                            StrBodyEmailresp.Replace("@Fullname", Obj.Fullname);
+                            StrBodyEmailresp.Replace("@PhoneNumber", Obj.PhoneNumber);
+                            StrBodyEmailresp.Replace("@Emailaddress", Obj.Emailaddress);
+                            StrBodyEmailresp.Replace("@Module", Obj.Module);
+                            StrBodyEmailresp.Replace("@CurrentYear", DateTime.Now.Year.ToString());
+                            string messageresp = StrBodyEmailresp.ToString();
+                            bool data1 = emlsnd.UttambsolutionssendemailAsync(Obj.Emailaddress, commtempdata.Templatesubject, Obj.Message, true, "", "", "");
+                            if (data1)
+                            {
+                                model.RespStatus = 0;
+                                model.RespMessage = "Email Sent";
+                            }
+                            else
+                            {
+                                model.RespStatus = 1;
+                                model.RespMessage = "Email not Sent";
+                            }
+                        }
+                        else
+                        {
+                            model.RespStatus = 1;
+                            model.RespMessage = "Template not found!";
+                        }
+                        model.RespStatus = 0;
+                        model.RespMessage = "Email Sent";
+                    }
+                    else
+                    {
+                        model.RespStatus = 1;
+                        model.RespMessage = "Email not Sent";
+                    }
+                }
+                else
+                {
+                    model.RespStatus = 1;
+                    model.RespMessage = "Template not found!";
+                }
+                return model;
+            });
+        }
+
+        public Task<Genericmodel> Sendnewcustomersubscriptionrespemail(Newcustomersubscription Obj)
+        {
+            Genericmodel model = new Genericmodel();
+
+            return Task.Run(() =>
+            {
+                var commtempdata = db.SettingsRepository.Getsystemcommunicationtemplatedatabyname(true, "Bookingademoresptemplate");
+                if (commtempdata != null)
+                {
+                    StringBuilder StrBodyEmail = new StringBuilder(commtempdata.Templatebody);
+                    StrBodyEmail.Replace("@Fullname", Obj.Fullname);
+                    StrBodyEmail.Replace("@PhoneNumber", Obj.PhoneNumber);
+                    StrBodyEmail.Replace("@Emailaddress", Obj.Emailaddress);
+                    StrBodyEmail.Replace("@Module", Obj.Module);
+                    StrBodyEmail.Replace("@CurrentYear", DateTime.Now.Year.ToString());
+                    string message = StrBodyEmail.ToString();
+                    bool data = emlsnd.UttambsolutionssendemailAsync(Obj.Emailaddress, commtempdata.Templatesubject, Obj.Message, true, "", "", "");
                     if (data)
                     {
                         model.RespStatus = 0;
@@ -58,6 +122,9 @@ namespace DBL
                 return model;
             });
         }
+
+
+
         #endregion
 
     }

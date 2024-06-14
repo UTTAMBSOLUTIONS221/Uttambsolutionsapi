@@ -25,7 +25,7 @@ namespace DBL.Repositories
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@Isemail", Isemail);
                 parameters.Add("@Templatename", Templatename);
-                return connection.Query<CommunicationTemplateModel>("Usp_Getsystemcommunicationtemplatedatabyname", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                return connection.Query<CommunicationTemplateModel>("Usp_Getcommunicationtemplatedbyname", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
             }
         }
         #endregion
