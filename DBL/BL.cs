@@ -38,7 +38,7 @@ namespace DBL
                     StrBodyEmail.Replace("@Module", Obj.Module);
                     StrBodyEmail.Replace("@CurrentYear", DateTime.Now.Year.ToString());
                     string message = StrBodyEmail.ToString();
-                    bool data = emlsnd.UttambsolutionssendemailAsync("fkingori@uttambsolutions.com", commtempdata.Templatesubject, Obj.Message, true, "", "", "");
+                    bool data = emlsnd.UttambsolutionssendemailAsync("fkingori@uttambsolutions.com", commtempdata.Templatesubject, message, true, "", "", "");
                     if (data)
                     {
                         var commtemprespdata = db.SettingsRepository.Getsystemcommunicationtemplatedatabyname(true, "Bookingademotemplate");
@@ -51,7 +51,7 @@ namespace DBL
                             StrBodyEmailresp.Replace("@Module", Obj.Module);
                             StrBodyEmailresp.Replace("@CurrentYear", DateTime.Now.Year.ToString());
                             string messageresp = StrBodyEmailresp.ToString();
-                            bool data1 = emlsnd.UttambsolutionssendemailAsync(Obj.Emailaddress, commtempdata.Templatesubject, Obj.Message, true, "", "", "");
+                            bool data1 = emlsnd.UttambsolutionssendemailAsync(Obj.Emailaddress, commtempdata.Templatesubject, messageresp, true, "", "", "");
                             if (data1)
                             {
                                 model.RespStatus = 0;
