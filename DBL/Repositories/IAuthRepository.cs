@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DBL.Models;
 
 namespace DBL.Repositories
 {
-    internal interface IAuthRepository
+    public interface IAuthRepository
     {
+        UsermodelResponce VerifySystemStaff(string Username);
     }
 }
