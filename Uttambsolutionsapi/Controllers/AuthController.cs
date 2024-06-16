@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Uttambsolutionsapi.Models;
 
 namespace Uttambsolutionsapi.Controllers
 {
@@ -26,7 +27,7 @@ namespace Uttambsolutionsapi.Controllers
         [Route("Authenticate"), HttpPost]
         public async Task<ActionResult> AuthenticateAsync([FromBody] Usercred userdata)
         {
-            var _userData = await bl.ValidateSystemStaff(userdata.username, userdata.password);
+            var _userData = await bl.ValidateSystemStaff(userdata.email, userdata.password);
             if (_userData.RespStatus == 1)
                 return Unauthorized(new UsermodelResponce
                 {

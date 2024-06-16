@@ -1,8 +1,8 @@
-﻿namespace Uttambsolutionsapi
+﻿namespace Uttambsolutionsapi.Models
 {
     public class Usercred
     {
-        public string? username { get; set; }
+        public string? email { get; set; }
         public string? password { get; set; }
     }
 }
