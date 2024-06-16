@@ -1,17 +1,13 @@
 ﻿using Dapper;
 using DBL.Models;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace DBL.Repositories
 {
-    public class AuthRepository:BaseRepository,IAuthRepository
+    public class AuthRepository : BaseRepository, IAuthRepository
     {
         public AuthRepository(string connectionString) : base(connectionString)
         {
