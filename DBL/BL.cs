@@ -21,6 +21,66 @@ namespace DBL
             db = new UnitOfWork(connString);
         }
 
+        #region Verify and Validate System Staff
+        public Task<UsermodelResponce> ValidateSystemStaff(string userName, string password)
+        {
+            return Task.Run(async () =>
+            {
+                UsermodelResponce userModel = new UsermodelResponce { };
+                var resp = db.AuthRepository.VerifySystemStaff(userName);
+                if (resp.RespStatus == 0)
+                {
+                    Encryptdecrypt sec = new Encryptdecrypt();
+                    string descpass = sec.Decrypt(resp.Usermodel.Passwords, resp.Usermodel.Passharsh);
+                    if (password == descpass)
+                    {
+                        userModel = new UsermodelResponce
+                        {
+                            RespStatus = resp.RespStatus,
+                            RespMessage = resp.RespMessage,
+                            Token = "",
+                            Usermodel = new UsermodeldataResponce
+                            {
+                                Userid = resp.Usermodel.Userid,
+                                Firstname = resp.Usermodel.Firstname,
+                                Fullname = resp.Usermodel.Fullname,
+                                Phonenumber = resp.Usermodel.Phonenumber,
+                                Username = resp.Usermodel.Username,
+                                Emailaddress = resp.Usermodel.Emailaddress,
+                                Roleid = resp.Usermodel.Roleid,
+                                Rolename = resp.Usermodel.Rolename,
+                                Passharsh = resp.Usermodel.Passharsh,
+                                Passwords = resp.Usermodel.Passwords,
+                                Isactive = resp.Usermodel.Isactive,
+                                Isdeleted = resp.Usermodel.Isdeleted,
+                                Loginstatus = resp.Usermodel.Loginstatus,
+                                Loginstatus = resp.Usermodel.Loginstatus,
+                                Passwordresetdate = resp.Usermodel.Passwordresetdate,
+                                Createdby = resp.Usermodel.Createdby,
+                                Modifiedby = resp.Usermodel.Modifiedby,
+                                Lastlogin = resp.Usermodel.Lastlogin,
+                                Datemodified = resp.Usermodel.Datemodified,
+                                Datecreated = resp.Usermodel.Datecreated,
+                            }
+                        };
+                        return userModel;
+                    }
+                    else
+                    {
+                        userModel.RespStatus = 1;
+                        userModel.RespMessage = "Incorrect Username or Password";
+                    }
+                }
+                else
+                {
+                    userModel.RespStatus = 1;
+                    userModel.RespMessage = resp.RespMessage;
+                }
+                return userModel;
+            });
+        }
+        #endregion
+
         #region Send Subscription Email
         public Task<Genericmodel> Sendnewcustomersubscriptionemail(Newcustomersubscription Obj)
         {
