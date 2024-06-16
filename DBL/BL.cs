@@ -54,7 +54,6 @@ namespace DBL
                                 Isactive = resp.Usermodel.Isactive,
                                 Isdeleted = resp.Usermodel.Isdeleted,
                                 Loginstatus = resp.Usermodel.Loginstatus,
-                                Loginstatus = resp.Usermodel.Loginstatus,
                                 Passwordresetdate = resp.Usermodel.Passwordresetdate,
                                 Createdby = resp.Usermodel.Createdby,
                                 Modifiedby = resp.Usermodel.Modifiedby,

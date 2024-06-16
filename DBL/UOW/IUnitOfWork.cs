@@ -10,5 +10,6 @@ namespace DBL.UOW
     public interface IUnitOfWork
     {
         ISettingsRepository SettingsRepository { get; }
+        IAuthRepository AuthRepository { get; }
     }
 }
