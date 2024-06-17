@@ -1,45 +1,51 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
-});
+builder.Services.AddSwaggerGen();
 
-// CORS configuration
+// Add CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactLocalhost",
-        builder =>
-        {
-            builder.WithOrigins("http://localhost:3000") // Adjust this to your React app's URL
-                   .AllowAnyMethod()
-                   .AllowAnyHeader();
-        });
+    options.AddPolicy("AllowSpecificOrigins",
+        builder => builder
+            .WithOrigins("http://localhost:3000", "http://localhost:3000") // Specify allowed origins
+            .AllowAnyHeader()
+            .AllowAnyMethod());
 });
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+    };
+});
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API v1"));
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+app.UseRouting();
 
-app.UseHttpsRedirection();
+// Use CORS
+app.UseCors("AllowSpecificOrigins");
 
-app.UseAuthorization();
-
-app.UseCors("AllowReactLocalhost"); // Apply CORS policy to the entire app
+app.UseAuthentication(); //Authentication
+app.UseAuthorization(); //Authorization
 
 app.MapControllers();
-
 app.Run();
