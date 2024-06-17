@@ -23,7 +23,7 @@ namespace DBL.Repositories
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@Username", Username);
                 parameters.Add("@StaffDetails", dbType: DbType.String, direction: ParameterDirection.Output, size: int.MaxValue);
-                var queryResult = connection.Query("Usp_Everestfcsverifysystemuser", parameters, commandType: CommandType.StoredProcedure);
+                var queryResult = connection.Query("Usp_verifysystemuser", parameters, commandType: CommandType.StoredProcedure);
                 string staffDetailsJson = parameters.Get<string>("@StaffDetails");
                 JObject responseJson = JObject.Parse(staffDetailsJson);
                 if (Convert.ToInt32(responseJson["RespStatus"]) == 0)
