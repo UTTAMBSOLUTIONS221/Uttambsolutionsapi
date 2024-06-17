@@ -80,6 +80,17 @@ namespace DBL
         }
         #endregion
 
+        #region System Modules
+        public Task<IEnumerable<Systemmodule>> Getsystemmoduledata()
+        {
+            return Task.Run(() =>
+            {
+                var Resp = db.ModulesRepository.Getsystemmoduledata();
+                return Resp;
+            });
+        }
+        #endregion
+
         #region Send Subscription Email
         public Task<Genericmodel> Sendnewcustomersubscriptionemail(Newcustomersubscription Obj)
         {

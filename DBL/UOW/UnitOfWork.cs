@@ -10,6 +10,7 @@ namespace DBL.UOW
        
         private ISettingsRepository settingsRepository;
         private IAuthRepository authRepository;
+        private IModulesRepository modulesRepository;
        
         public UnitOfWork(string connectionString) => connString = connectionString;
         public ISettingsRepository SettingsRepository
@@ -20,11 +21,16 @@ namespace DBL.UOW
         {
             get { return authRepository ?? (authRepository = new AuthRepository(connString)); }
         }
+        public IModulesRepository ModulesRepository
+        {
+            get { return modulesRepository ?? (modulesRepository = new ModulesRepository(connString)); }
+        }
 
         public void Reset()
         {
             settingsRepository = null;
             authRepository = null;
+            modulesRepository = null;
         }
 
         public void Dispose()
